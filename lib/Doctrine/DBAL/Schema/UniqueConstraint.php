@@ -3,7 +3,6 @@
 namespace Doctrine\DBAL\Schema;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use InvalidArgumentException;
 use function array_keys;
 use function array_map;
 use function is_string;
@@ -28,9 +27,9 @@ class UniqueConstraint extends AbstractAsset implements Constraint
      * Platform specific flags
      * array($flagName => true)
      *
-     * @var array
+     * @var true[]
      */
-    protected $flags = array();
+    protected $flags = [];
 
     /**
      * Platform specific options
@@ -42,10 +41,10 @@ class UniqueConstraint extends AbstractAsset implements Constraint
     /**
      * @param string   $indexName
      * @param string[] $columns
-     * @param array    $flags
+     * @param string[] $flags
      * @param mixed[]  $options
      */
-    public function __construct($indexName, array $columns, array $flags = array(), array $options = [])
+    public function __construct($indexName, array $columns, array $flags = [], array $options = [])
     {
         $this->_setName($indexName);
 
@@ -61,27 +60,11 @@ class UniqueConstraint extends AbstractAsset implements Constraint
     }
 
     /**
-     * @param string $column
-     *
-     * @return void
-     *
-     * @throws InvalidArgumentException
-     */
-    protected function _addColumn($column)
-    {
-        if (! is_string($column)) {
-            throw new InvalidArgumentException('Expecting a string as Index Column');
-        }
-
-        $this->_columns[$column] = new Identifier($column);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getColumns()
     {
-        return array_keys($this->_columns);
+        return array_keys($this->columns);
     }
 
     /**
@@ -91,7 +74,7 @@ class UniqueConstraint extends AbstractAsset implements Constraint
     {
         $columns = [];
 
-        foreach ($this->_columns as $column) {
+        foreach ($this->columns as $column) {
             $columns[] = $column->getQuotedName($platform);
         }
 
@@ -119,11 +102,11 @@ class UniqueConstraint extends AbstractAsset implements Constraint
     /**
      * Adds flag for a unique constraint that translates to platform specific handling.
      *
-     * @example $uniqueConstraint->addFlag('CLUSTERED')
-     *
      * @param string $flag
      *
      * @return self
+     *
+     * @example $uniqueConstraint->addFlag('CLUSTERED')
      */
     public function addFlag($flag)
     {
@@ -137,7 +120,7 @@ class UniqueConstraint extends AbstractAsset implements Constraint
      *
      * @param string $flag
      *
-     * @return boolean
+     * @return bool
      */
     public function hasFlag($flag)
     {
@@ -182,5 +165,21 @@ class UniqueConstraint extends AbstractAsset implements Constraint
     public function getOptions()
     {
         return $this->options;
+    }
+
+    /**
+     * @param string $column
+     *
+     * @return void
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function _addColumn($column)
+    {
+        if (! is_string($column)) {
+            throw new InvalidArgumentException('Expecting a string as Index Column');
+        }
+
+        $this->columns[$column] = new Identifier($column);
     }
 }

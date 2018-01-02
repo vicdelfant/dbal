@@ -7,14 +7,13 @@ use Doctrine\DBAL\Driver\StatementIterator;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\ParameterType;
 use IteratorAggregate;
-use PDO;
 use ReflectionClass;
 use ReflectionObject;
 use stdClass;
 use const SASQL_BOTH;
 use function array_key_exists;
+use function count;
 use function func_get_args;
-use function func_num_args;
 use function gettype;
 use function is_array;
 use function is_numeric;
@@ -194,7 +193,7 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
      *
      * @throws SQLAnywhereException
      */
-    public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+    public function fetch($fetchMode = null, ...$args)
     {
         if (! is_resource($this->result)) {
             return false;
@@ -216,10 +215,9 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
                 $className = $this->defaultFetchClass;
                 $ctorArgs  = $this->defaultFetchClassCtorArgs;
 
-                if (func_num_args() >= 2) {
-                    $args      = func_get_args();
-                    $className = $args[1];
-                    $ctorArgs  = $args[2] ?? [];
+                if (count($args) > 0) {
+                    $className = $args[0];
+                    $ctorArgs  = $args[1] ?? [];
                 }
 
                 $result = sasql_fetch_object($this->result);
@@ -244,25 +242,25 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
+    public function fetchAll($fetchMode = null, ...$args)
     {
         $rows = [];
 
         switch ($fetchMode) {
             case FetchMode::CUSTOM_OBJECT:
-                while ($row = $this->fetch(...func_get_args())) {
+                while (($row = $this->fetch(...func_get_args())) !== false) {
                     $rows[] = $row;
                 }
                 break;
 
             case FetchMode::COLUMN:
-                while ($row = $this->fetchColumn()) {
+                while (($row = $this->fetchColumn()) !== false) {
                     $rows[] = $row;
                 }
                 break;
 
             default:
-                while ($row = $this->fetch($fetchMode)) {
+                while (($row = $this->fetch($fetchMode)) !== false) {
                     $rows[] = $row;
                 }
         }
@@ -303,11 +301,19 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function setFetchMode($fetchMode, $arg2 = null, $arg3 = null)
+    public function setFetchMode($fetchMode, ...$args)
     {
-        $this->defaultFetchMode          = $fetchMode;
-        $this->defaultFetchClass         = $arg2 ?: $this->defaultFetchClass;
-        $this->defaultFetchClassCtorArgs = $arg3 ? (array) $arg3 : $this->defaultFetchClassCtorArgs;
+        $this->defaultFetchMode = $fetchMode;
+
+        if (isset($args[0])) {
+            $this->defaultFetchClass = $args[0];
+        }
+
+        if (! isset($args[1])) {
+            return;
+        }
+
+        $this->defaultFetchClassCtorArgs = (array) $args[1];
     }
 
     /**

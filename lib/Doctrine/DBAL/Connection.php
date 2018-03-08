@@ -891,9 +891,7 @@ class Connection implements DriverConnection
         $this->connect();
 
         $logger = $this->_config->getSQLLogger();
-        if ($logger) {
-            $logger->startQuery($query, $params, $types);
-        }
+        $logger->startQuery($query, $params, $types);
 
         try {
             if ($params) {
@@ -915,9 +913,7 @@ class Connection implements DriverConnection
 
         $stmt->setFetchMode($this->defaultFetchMode);
 
-        if ($logger) {
-            $logger->stopQuery();
-        }
+        $logger->stopQuery();
 
         return $stmt;
     }
@@ -1004,9 +1000,7 @@ class Connection implements DriverConnection
         $args = func_get_args();
 
         $logger = $this->_config->getSQLLogger();
-        if ($logger) {
-            $logger->startQuery($args[0]);
-        }
+        $logger->startQuery($args[0]);
 
         try {
             $statement = $this->_conn->query(...$args);
@@ -1016,9 +1010,7 @@ class Connection implements DriverConnection
 
         $statement->setFetchMode($this->defaultFetchMode);
 
-        if ($logger) {
-            $logger->stopQuery();
-        }
+        $logger->stopQuery();
 
         return $statement;
     }
@@ -1042,9 +1034,7 @@ class Connection implements DriverConnection
         $this->connect();
 
         $logger = $this->_config->getSQLLogger();
-        if ($logger) {
-            $logger->startQuery($query, $params, $types);
-        }
+        $logger->startQuery($query, $params, $types);
 
         try {
             if ($params) {
@@ -1065,9 +1055,7 @@ class Connection implements DriverConnection
             throw DBALException::driverExceptionDuringQuery($this->_driver, $ex, $query, $this->resolveParams($params, $types));
         }
 
-        if ($logger) {
-            $logger->stopQuery();
-        }
+        $logger->stopQuery();
 
         return $result;
     }
@@ -1086,9 +1074,7 @@ class Connection implements DriverConnection
         $this->connect();
 
         $logger = $this->_config->getSQLLogger();
-        if ($logger) {
-            $logger->startQuery($statement);
-        }
+        $logger->startQuery($statement);
 
         try {
             $result = $this->_conn->exec($statement);
@@ -1096,9 +1082,7 @@ class Connection implements DriverConnection
             throw DBALException::driverExceptionDuringQuery($this->_driver, $ex, $statement);
         }
 
-        if ($logger) {
-            $logger->stopQuery();
-        }
+        $logger->stopQuery();
 
         return $result;
     }
@@ -1242,21 +1226,13 @@ class Connection implements DriverConnection
         $logger = $this->_config->getSQLLogger();
 
         if ($this->transactionNestingLevel === 1) {
-            if ($logger) {
-                $logger->startQuery('"START TRANSACTION"');
-            }
+            $logger->startQuery('"START TRANSACTION"');
             $this->_conn->beginTransaction();
-            if ($logger) {
-                $logger->stopQuery();
-            }
+            $logger->stopQuery();
         } elseif ($this->nestTransactionsWithSavepoints) {
-            if ($logger) {
-                $logger->startQuery('"SAVEPOINT"');
-            }
+            $logger->startQuery('"SAVEPOINT"');
             $this->createSavepoint($this->_getNestedTransactionSavePointName());
-            if ($logger) {
-                $logger->stopQuery();
-            }
+            $logger->stopQuery();
         }
     }
 
@@ -1282,21 +1258,13 @@ class Connection implements DriverConnection
         $logger = $this->_config->getSQLLogger();
 
         if ($this->transactionNestingLevel === 1) {
-            if ($logger) {
-                $logger->startQuery('"COMMIT"');
-            }
+            $logger->startQuery('"COMMIT"');
             $this->_conn->commit();
-            if ($logger) {
-                $logger->stopQuery();
-            }
+            $logger->stopQuery();
         } elseif ($this->nestTransactionsWithSavepoints) {
-            if ($logger) {
-                $logger->startQuery('"RELEASE SAVEPOINT"');
-            }
+            $logger->startQuery('"RELEASE SAVEPOINT"');
             $this->releaseSavepoint($this->_getNestedTransactionSavePointName());
-            if ($logger) {
-                $logger->stopQuery();
-            }
+            $logger->stopQuery();
         }
 
         --$this->transactionNestingLevel;
@@ -1342,28 +1310,20 @@ class Connection implements DriverConnection
         $logger = $this->_config->getSQLLogger();
 
         if ($this->transactionNestingLevel === 1) {
-            if ($logger) {
-                $logger->startQuery('"ROLLBACK"');
-            }
+            $logger->startQuery('"ROLLBACK"');
             $this->transactionNestingLevel = 0;
             $this->_conn->rollBack();
             $this->isRollbackOnly = false;
-            if ($logger) {
-                $logger->stopQuery();
-            }
+            $logger->stopQuery();
 
             if ($this->autoCommit === false) {
                 $this->beginTransaction();
             }
         } elseif ($this->nestTransactionsWithSavepoints) {
-            if ($logger) {
-                $logger->startQuery('"ROLLBACK TO SAVEPOINT"');
-            }
+            $logger->startQuery('"ROLLBACK TO SAVEPOINT"');
             $this->rollbackSavepoint($this->_getNestedTransactionSavePointName());
             --$this->transactionNestingLevel;
-            if ($logger) {
-                $logger->stopQuery();
-            }
+            $logger->stopQuery();
         } else {
             $this->isRollbackOnly = true;
             --$this->transactionNestingLevel;

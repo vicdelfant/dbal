@@ -10,7 +10,7 @@ use function var_dump;
  *
  * @link   www.doctrine-project.org
  */
-class EchoSQLLogger implements SQLLogger
+final class EchoSQLLogger implements SQLLogger
 {
     /**
      * {@inheritdoc}

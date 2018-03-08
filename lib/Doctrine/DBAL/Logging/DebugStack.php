@@ -9,7 +9,7 @@ use function microtime;
  *
  * @link   www.doctrine-project.org
  */
-class DebugStack implements SQLLogger
+final class DebugStack implements SQLLogger
 {
     /**
      * Executed SQL queries.

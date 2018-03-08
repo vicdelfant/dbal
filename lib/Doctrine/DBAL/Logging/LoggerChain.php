@@ -7,7 +7,7 @@ namespace Doctrine\DBAL\Logging;
  *
  * @link   www.doctrine-project.org
  */
-class LoggerChain implements SQLLogger
+final class LoggerChain implements SQLLogger
 {
     /** @var SQLLogger[] */
     private $loggers = [];

@@ -10,7 +10,7 @@ use function array_merge;
  *
  * @link   www.doctrine-project.org
  */
-class PostgreSQL94Keywords extends PostgreSQL92Keywords
+class PostgreSQL94Keywords extends PostgreSQLKeywords
 {
     /**
      * {@inheritdoc}

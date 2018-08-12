@@ -1354,16 +1354,16 @@ SQL
     /**
      * {@inheritdoc}
      */
-    protected function doModifyLimitQuery($query, $limit, $offset)
+    protected function doModifyLimitQuery(string $query, ?int $limit, int $offset) : string
     {
         $limitOffsetClause = '';
 
-        if ($limit > 0) {
+        if ($limit !== null) {
             $limitOffsetClause = 'TOP ' . $limit . ' ';
         }
 
         if ($offset > 0) {
-            if ($limit === 0) {
+            if ($limit === null) {
                 $limitOffsetClause = 'TOP ALL ';
             }
 

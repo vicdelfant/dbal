@@ -128,6 +128,18 @@ abstract class Type
     {
         return null;
     }
+    
+    /**
+     * Gets the default field options of this type.
+     *
+     * @param AbstractPlatform $platform
+     *
+     * @return array
+     */
+    public function getDefaultOptions(AbstractPlatform $platform)
+    {
+        return [];
+    }
 
     /**
      * Gets the SQL declaration snippet for a field of this type.
